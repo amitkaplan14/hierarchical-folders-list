@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hierarchical Folders List Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    #root {
+      height: 600px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .demo-container {
+      height: 100%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hierarchical Folders List Demo</h1>
+  <div id="root">
+    <div class="demo-container" id="demo"></div>
+  </div>
+
+  <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/@emotion/react@11.11.0/dist/emotion-react.umd.min.js"></script>
+  <script src="https://unpkg.com/@emotion/styled@11.11.0/dist/emotion-styled.umd.min.js"></script>
+  <script src="https://unpkg.com/classnames@2.3.2/index.js"></script>
+  <script src="../dist/index.umd.js"></script>
+
+  <script type="text/babel">
+    const { FolderList } = window.HierarchicalFoldersList;
+
+    // Mock data for the example
+    const generateMockData = (depth = 3, breadth = 5, prefix = '') => {
+      if (depth === 0) return [];
+      
+      const items = [];
+      
+      for (let i = 0; i < breadth; i++) {
+        const id = `${prefix}${i}`;
+        const isFolder = depth > 1;
+        
+        const item = {
+          id,
+          name: isFolder ? `Folder ${id}` : `File ${id}`,
+          isFolder,
+        };
+        
+        if (isFolder) {
+          item.children = generateMockData(depth - 1, breadth, `${id}-`);
+        }
+        
+        items.push(item);
+      }
+      
+      return items;
+    };
+
+    // Large data set
+    const folderData = generateMockData(5, 5);
+
+    const App = () => {
+      const [selectedItem, setSelectedItem] = React.useState(null);
+      
+      const handleItemClick = (item) => {
+        setSelectedItem(item);
+        console.log('Selected item:', item);
+      };
+      
+      return (
+        <div style={{ height: '100%' }}>
+          <FolderList
+            data={folderData}
+            onItemClick={handleItemClick}
+            defaultExpandedIds={['0']}
+          />
+        </div>
+      );
+    };
+
+    ReactDOM.render(<App />, document.getElementById('demo'));
+  </script>
+</body>
+</html> 
