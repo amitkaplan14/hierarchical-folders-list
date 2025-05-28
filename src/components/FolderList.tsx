@@ -75,6 +75,7 @@ export const FolderList: React.FC<FolderListProps> = ({
     containerStyle,
     containerRef: virtualContainerRef,
     scrollToIndex,
+    scrollItemIntoView,
   } = useVirtualization({
     items: visibleFlatItems,
     itemHeight,
@@ -115,6 +116,7 @@ export const FolderList: React.FC<FolderListProps> = ({
     setSelectedId,
     toggleExpand,
     scrollToIndex,
+    scrollItemIntoView,
   });
   
   // Focus the container on mount to enable keyboard navigation

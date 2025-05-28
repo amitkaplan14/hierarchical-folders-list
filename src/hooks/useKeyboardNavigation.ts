@@ -13,6 +13,7 @@ interface UseKeyboardNavigationProps {
   setSelectedId: (id: string | null) => void;
   toggleExpand: (id: string) => void;
   scrollToIndex: (index: number) => void;
+  scrollItemIntoView: (index: number) => void;
 }
 
 export const useKeyboardNavigation = ({
@@ -26,6 +27,7 @@ export const useKeyboardNavigation = ({
   setSelectedId,
   toggleExpand,
   scrollToIndex,
+  scrollItemIntoView,
 }: UseKeyboardNavigationProps) => {
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     if (!enabled || !selectedId) return;
@@ -43,7 +45,8 @@ export const useKeyboardNavigation = ({
         const nextId = getNextItemId(selectedId, visibleItems, 'down');
         if (nextId) {
           setSelectedId(nextId);
-          scrollToIndex(currentIndex + 1);
+          const nextIndex = visibleItems.findIndex(item => item.id === nextId);
+          scrollItemIntoView(nextIndex);
         }
         break;
         
@@ -54,7 +57,8 @@ export const useKeyboardNavigation = ({
         const prevId = getNextItemId(selectedId, visibleItems, 'up');
         if (prevId) {
           setSelectedId(prevId);
-          scrollToIndex(currentIndex - 1);
+          const prevIndex = visibleItems.findIndex(item => item.id === prevId);
+          scrollItemIntoView(prevIndex);
         }
         break;
         
@@ -82,7 +86,7 @@ export const useKeyboardNavigation = ({
           if (parentItem) {
             setSelectedId(parentItem.id);
             const parentIndex = visibleItems.findIndex(item => item.id === parentItem.id);
-            scrollToIndex(parentIndex);
+            scrollItemIntoView(parentIndex);
           }
         }
         break;
@@ -110,7 +114,7 @@ export const useKeyboardNavigation = ({
           if (parentItem) {
             setSelectedId(parentItem.id);
             const parentIndex = visibleItems.findIndex(item => item.id === parentItem.id);
-            scrollToIndex(parentIndex);
+            scrollItemIntoView(parentIndex);
           }
         }
         break;
@@ -125,7 +129,7 @@ export const useKeyboardNavigation = ({
     collapseOnEscape,
     setSelectedId, 
     toggleExpand,
-    scrollToIndex
+    scrollItemIntoView
   ]);
 
   useEffect(() => {

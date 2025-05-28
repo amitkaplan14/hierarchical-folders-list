@@ -23,6 +23,7 @@ interface UseVirtualizationResult {
   containerStyle: React.CSSProperties;
   containerRef: React.RefObject<HTMLDivElement | null>;
   scrollToIndex: (index: number) => void;
+  scrollItemIntoView: (index: number) => void;
 }
 
 export const useVirtualization = ({
@@ -51,11 +52,34 @@ export const useVirtualization = ({
     setVisibleRange({ start: startIndex, end: endIndex });
   }, [itemHeight, items.length, overscan, enabled]);
 
+  // Scroll the container to show the item at the specified index at the top
   const scrollToIndex = useCallback((index: number) => {
     if (!containerRef.current || !enabled) return;
     
     const scrollTop = index * itemHeight;
     containerRef.current.scrollTop = scrollTop;
+  }, [itemHeight, enabled]);
+
+  // Only scroll if the item is not already in view
+  const scrollItemIntoView = useCallback((index: number) => {
+    if (!containerRef.current || !enabled) return;
+    
+    const container = containerRef.current;
+    const itemTop = index * itemHeight;
+    const itemBottom = itemTop + itemHeight;
+    
+    const viewportTop = container.scrollTop;
+    const viewportBottom = viewportTop + container.clientHeight;
+    
+    // Item is above the visible area
+    if (itemTop < viewportTop) {
+      container.scrollTop = itemTop;
+    } 
+    // Item is below the visible area
+    else if (itemBottom > viewportBottom) {
+      container.scrollTop = itemBottom - container.clientHeight;
+    }
+    // Otherwise, item is already visible, don't scroll
   }, [itemHeight, enabled]);
 
   // Handle scroll events
@@ -132,5 +156,6 @@ export const useVirtualization = ({
     containerStyle: enabled ? containerStyle : {},
     containerRef,
     scrollToIndex,
+    scrollItemIntoView,
   };
 }; 
