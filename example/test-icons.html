@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Icon Support Test - Hierarchical Folders List</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .demo-section {
+      margin-bottom: 30px;
+    }
+    .tree-container {
+      height: 400px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    .method-buttons {
+      display: flex;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .method-button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background: #f0f0f0;
+      color: #333;
+    }
+    .method-button.active {
+      background: #007acc;
+      color: white;
+    }
+    .info-panel {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 Icon Support Test</h1>
+    <p>This demonstrates the comprehensive icon support for external consumers.</p>
+    
+    <div class="demo-section">
+      <h2>Icon Configuration Methods</h2>
+      <div class="method-buttons">
+        <button class="method-button active" onclick="setIconMethod('iconMap')">
+          Icon Map + Extension Resolver
+        </button>
+        <button class="method-button" onclick="setIconMethod('iconResolver')">
+          Icon Resolver Function
+        </button>
+        <button class="method-button" onclick="setIconMethod('mixed')">
+          Mixed Approach
+        </button>
+      </div>
+      
+      <div class="tree-container" id="tree-container"></div>
+      
+      <div class="info-panel" id="info-panel">
+        <h4>Icon Map + Extension Resolver</h4>
+        <p>Uses an icon map with file extensions as keys, plus automatic file extension detection.</p>
+        <ul>
+          <li>✅ Automatic file extension detection</li>
+          <li>✅ Custom extension mapping</li>
+          <li>✅ Explicit iconKey support</li>
+          <li>✅ Default fallback icons</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="demo-section">
+      <h2>Features Demonstrated</h2>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+          <h4>🎨 Icon Sources</h4>
+          <ul>
+            <li>Direct icon assignment</li>
+            <li>Icon map lookup</li>
+            <li>Extension-based resolution</li>
+            <li>Custom resolver functions</li>
+            <li>Default fallbacks</li>
+          </ul>
+        </div>
+        <div>
+          <h4>🔧 Consumer Benefits</h4>
+          <ul>
+            <li>Use any icon library</li>
+            <li>Flexible configuration</li>
+            <li>Automatic file type detection</li>
+            <li>Priority-based resolution</li>
+            <li>Backward compatibility</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- React and dependencies -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/@emotion/react@11/dist/emotion-react.umd.min.js"></script>
+  <script src="https://unpkg.com/@emotion/styled@11/dist/emotion-styled.umd.min.js"></script>
+  <script src="https://unpkg.com/classnames@2.3.2/index.js"></script>
+  
+  <!-- Our component -->
+  <script src="../dist/index.umd.js"></script>
+
+  <script type="text/babel">
+    const { useState, createElement: h } = React;
+    const { FolderList, createFileExtensionIconResolver } = HierarchicalFoldersList;
+
+    // Custom icon components
+    const FolderIcon = () => h('svg', {
+      viewBox: '0 0 24 24',
+      fill: '#ffc107',
+      style: { width: '16px', height: '16px' }
+    }, h('path', { d: 'M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z' }));
+
+    const FolderOpenIcon = () => h('svg', {
+      viewBox: '0 0 24 24',
+      fill: '#ff9800',
+      style: { width: '16px', height: '16px' }
+    }, h('path', { d: 'M20 6h-2.17l-1.24-1.35c-.37-.41-.91-.65-1.47-.65H9c-.56 0-1.1.24-1.47.65L6.17 6H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z' }));
+
+    const JSIcon = () => h('div', {
+      style: {
+        width: '16px',
+        height: '16px',
+        backgroundColor: '#f7df1e',
+        color: '#000',
+        fontSize: '8px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: 'bold',
+        borderRadius: '2px'
+      }
+    }, 'JS');
+
+    const TSIcon = () => h('div', {
+      style: {
+        width: '16px',
+        height: '16px',
+        backgroundColor: '#3178c6',
+        color: '#fff',
+        fontSize: '8px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: 'bold',
+        borderRadius: '2px'
+      }
+    }, 'TS');
+
+    const ReactIcon = () => h('div', {
+      style: {
+        width: '16px',
+        height: '16px',
+        backgroundColor: '#61dafb',
+        color: '#000',
+        fontSize: '7px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: 'bold',
+        borderRadius: '2px'
+      }
+    }, 'RX');
+
+    const CSSIcon = () => h('div', {
+      style: {
+        width: '16px',
+        height: '16px',
+        backgroundColor: '#1572b6',
+        color: '#fff',
+        fontSize: '7px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: 'bold',
+        borderRadius: '2px'
+      }
+    }, 'CSS');
+
+    const DefaultFileIcon = () => h('svg', {
+      viewBox: '0 0 24 24',
+      fill: '#90caf9',
+      style: { width: '16px', height: '16px' }
+    }, h('path', { d: 'M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z' }));
+
+    // Sample data
+    const sampleData = [
+      {
+        id: 'src',
+        name: 'src',
+        isFolder: true,
+        children: [
+          {
+            id: 'components',
+            name: 'components',
+            isFolder: true,
+            children: [
+              { id: 'App.tsx', name: 'App.tsx' },
+              { id: 'Button.tsx', name: 'Button.tsx' },
+              { id: 'Modal.jsx', name: 'Modal.jsx' },
+            ]
+          },
+          {
+            id: 'utils',
+            name: 'utils',
+            isFolder: true,
+            children: [
+              { id: 'helpers.js', name: 'helpers.js' },
+              { id: 'api.ts', name: 'api.ts' },
+            ]
+          },
+          { id: 'index.ts', name: 'index.ts' },
+          { id: 'styles.css', name: 'styles.css' },
+        ]
+      },
+      {
+        id: 'public',
+        name: 'public',
+        isFolder: true,
+        children: [
+          { id: 'index.html', name: 'index.html' },
+          { id: 'favicon.ico', name: 'favicon.ico' },
+        ]
+      },
+      { id: 'package.json', name: 'package.json' },
+      { id: 'tsconfig.json', name: 'tsconfig.json' },
+      { id: 'README.md', name: 'README.md' },
+      {
+        id: 'special-folder',
+        name: 'Special Folder',
+        isFolder: true,
+        iconKey: 'special',
+        children: [
+          {
+            id: 'special-file',
+            name: 'special-file.txt',
+            icon: h('span', { style: { fontSize: '16px' } }, '🔥')
+          }
+        ]
+      }
+    ];
+
+    // Icon configurations
+    const iconMapConfig = {
+      iconMap: {
+        'js': h(JSIcon),
+        'jsx': h(ReactIcon),
+        'ts': h(TSIcon),
+        'tsx': h(ReactIcon),
+        'css': h(CSSIcon),
+        'json': h('span', { style: { fontSize: '12px' } }, '{}'),
+        'folder': h(FolderIcon),
+        'special': h('span', { style: { color: 'purple', fontSize: '16px' } }, '⭐'),
+      },
+      getIconKey: createFileExtensionIconResolver({
+        'html': 'html',
+        'ico': 'image',
+        'md': 'markdown',
+      }),
+      defaultFolderIcon: h(FolderIcon),
+      defaultFileIcon: h(DefaultFileIcon),
+    };
+
+    const iconResolverConfig = {
+      iconResolver: (item, isExpanded) => {
+        const isFolder = Boolean(item.isFolder || (item.children && item.children.length > 0));
+        
+        if (isFolder) {
+          return isExpanded ? h(FolderOpenIcon) : h(FolderIcon);
+        }
+        
+        if (item.name.endsWith('.js')) return h(JSIcon);
+        if (item.name.endsWith('.jsx')) return h(ReactIcon);
+        if (item.name.endsWith('.ts')) return h(TSIcon);
+        if (item.name.endsWith('.tsx')) return h(ReactIcon);
+        if (item.name.endsWith('.css')) return h(CSSIcon);
+        if (item.name.endsWith('.json')) return h('span', { style: { fontSize: '12px' } }, '{}');
+        
+        return h(DefaultFileIcon);
+      },
+      defaultFolderIcon: h(FolderIcon),
+      defaultFileIcon: h(DefaultFileIcon),
+    };
+
+    const mixedConfig = {
+      iconMap: {
+        'special': h('span', { style: { color: 'purple', fontSize: '16px' } }, '⭐'),
+        'js': h(JSIcon),
+        'ts': h(TSIcon),
+      },
+      iconResolver: (item, isExpanded) => {
+        const isFolder = Boolean(item.isFolder || (item.children && item.children.length > 0));
+        
+        if (isFolder) {
+          return isExpanded ? h(FolderOpenIcon) : h(FolderIcon);
+        }
+        
+        if (item.name.endsWith('.tsx') || item.name.endsWith('.jsx')) {
+          return h(ReactIcon);
+        }
+        
+        return null;
+      },
+      getIconKey: (item) => {
+        const extension = item.name.split('.').pop()?.toLowerCase();
+        return extension || 'file';
+      },
+      defaultFolderIcon: h(FolderIcon),
+      defaultFileIcon: h(DefaultFileIcon),
+    };
+
+    const App = () => {
+      const [iconMethod, setIconMethod] = useState('iconMap');
+
+      const getCurrentConfig = () => {
+        switch (iconMethod) {
+          case 'iconMap': return iconMapConfig;
+          case 'iconResolver': return iconResolverConfig;
+          case 'mixed': return mixedConfig;
+          default: return iconMapConfig;
+        }
+      };
+
+      const getInfoContent = () => {
+        switch (iconMethod) {
+          case 'iconMap':
+            return {
+              title: 'Icon Map + Extension Resolver',
+              description: 'Uses an icon map with file extensions as keys, plus automatic file extension detection.',
+              features: [
+                'Automatic file extension detection',
+                'Custom extension mapping',
+                'Explicit iconKey support',
+                'Default fallback icons'
+              ]
+            };
+          case 'iconResolver':
+            return {
+              title: 'Icon Resolver Function',
+              description: 'Uses a custom function to determine icons based on item properties and state.',
+              features: [
+                'Dynamic icon selection',
+                'Expanded/collapsed state awareness',
+                'Custom logic for any file type',
+                'Full control over icon resolution'
+              ]
+            };
+          case 'mixed':
+            return {
+              title: 'Mixed Approach',
+              description: 'Combines icon map, icon resolver, and extension detection for maximum flexibility.',
+              features: [
+                'Icon map for common types',
+                'Resolver for special cases',
+                'Extension detection fallback',
+                'Priority-based resolution'
+              ]
+            };
+        }
+      };
+
+      // Update info panel
+      React.useEffect(() => {
+        const info = getInfoContent();
+        const infoPanel = document.getElementById('info-panel');
+        if (infoPanel) {
+          infoPanel.innerHTML = `
+            <h4>${info.title}</h4>
+            <p>${info.description}</p>
+            <ul>
+              ${info.features.map(feature => `<li>✅ ${feature}</li>`).join('')}
+            </ul>
+          `;
+        }
+      }, [iconMethod]);
+
+      return h(FolderList, {
+        data: sampleData,
+        iconConfig: getCurrentConfig(),
+        defaultExpandedIds: ['src', 'components', 'special-folder'],
+        onItemClick: (item) => console.log('Clicked:', item)
+      });
+    };
+
+    // Global function for buttons
+    window.setIconMethod = (method) => {
+      // Update button states
+      document.querySelectorAll('.method-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      // Re-render with new method
+      window.currentIconMethod = method;
+      renderApp();
+    };
+
+    const renderApp = () => {
+      const container = document.getElementById('tree-container');
+      const root = ReactDOM.createRoot(container);
+      root.render(h(App));
+    };
+
+    // Initial render
+    renderApp();
+  </script>
+</body>
+</html> 

@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import styled from '@emotion/styled';
 import { FolderItemProps } from '../types';
+import { resolveIcon } from '../utils/iconUtils';
 
 const FolderItemContainer = styled.div<{
   depth: number;
@@ -93,6 +94,7 @@ export const FolderItem: React.FC<FolderItemProps> = ({
   onItemContextMenu,
   renderItemContent,
   renderItemIcon,
+  iconConfig,
   itemHeight,
 }) => {
   const handleClick = useCallback((event: React.MouseEvent) => {
@@ -125,14 +127,19 @@ export const FolderItem: React.FC<FolderItemProps> = ({
 
   const isFolder = Boolean(item.isFolder || (item.children && item.children.length > 0));
 
-  // Get the appropriate icon
+  // Get the appropriate icon using the new resolution logic
   const renderIcon = useCallback(() => {
-    if (renderItemIcon) {
-      return renderItemIcon(item, isExpanded);
-    }
+    const resolvedIcon = resolveIcon(
+      item,
+      isExpanded,
+      iconConfig,
+      renderItemIcon,
+      <DefaultFolderIcon />,
+      <DefaultFileIcon />
+    );
     
-    return isFolder ? <DefaultFolderIcon /> : <DefaultFileIcon />;
-  }, [item, isFolder, isExpanded, renderItemIcon]);
+    return resolvedIcon || (isFolder ? <DefaultFolderIcon /> : <DefaultFileIcon />);
+  }, [item, isFolder, isExpanded, renderItemIcon, iconConfig]);
 
   // Render custom content or default
   const content = renderItemContent ? 
@@ -156,7 +163,7 @@ export const FolderItem: React.FC<FolderItemProps> = ({
         <EmptyToggle />
       )}
       <IconContainer>
-        {item.icon || renderIcon()}
+        {renderIcon()}
       </IconContainer>
       {content}
     </FolderItemContainer>

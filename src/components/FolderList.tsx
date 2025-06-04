@@ -34,6 +34,7 @@ export const FolderList: React.FC<FolderListProps> = ({
   onItemContextMenu,
   renderItemContent,
   renderItemIcon,
+  iconConfig,
   itemHeight = 28,
   className,
   style,
@@ -171,6 +172,7 @@ export const FolderList: React.FC<FolderListProps> = ({
                   onItemContextMenu={onItemContextMenu}
                   renderItemContent={renderItemContent}
                   renderItemIcon={renderItemIcon}
+                  iconConfig={iconConfig}
                   itemHeight={itemHeight}
                 />
               </div>

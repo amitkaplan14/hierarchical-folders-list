@@ -10,6 +10,7 @@ A React component for displaying hierarchical folder structures with virtualizat
 - 🔧 **Flexible API**: Render custom item content and icons
 - 🌲 **Tree View**: Familiar folder tree navigation like in Windows/Mac
 - 📦 **Small Bundle Size**: Lightweight with minimal dependencies
+- 🎯 **Comprehensive Icon Support**: Multiple ways to provide icons from external sources
 
 ## Installation
 
@@ -74,6 +75,108 @@ const App = () => {
 export default App;
 ```
 
+## Icon Support
+
+The component provides multiple flexible ways for consumers to provide icons from external sources:
+
+### 1. Direct Icon Assignment
+
+```jsx
+const data = [
+  {
+    id: 'file-1',
+    name: 'special-file.txt',
+    icon: <CustomIcon /> // Direct React element
+  }
+];
+```
+
+### 2. Icon Configuration Object
+
+```jsx
+import { FolderList, createFileExtensionIconResolver } from 'hierarchical-folders-list';
+
+const iconConfig = {
+  // Icon map with keys
+  iconMap: {
+    'js': <JavaScriptIcon />,
+    'ts': <TypeScriptIcon />,
+    'jsx': <ReactIcon />,
+    'css': <CSSIcon />,
+    'folder': <FolderIcon />,
+  },
+  
+  // Automatic icon key resolution based on file extension
+  getIconKey: createFileExtensionIconResolver({
+    'html': 'web',
+    'md': 'markdown',
+  }),
+  
+  // Default icons
+  defaultFolderIcon: <FolderIcon />,
+  defaultFileIcon: <FileIcon />,
+};
+
+<FolderList data={data} iconConfig={iconConfig} />
+```
+
+### 3. Icon Resolver Function
+
+```jsx
+const iconConfig = {
+  iconResolver: (item, isExpanded) => {
+    const isFolder = Boolean(item.isFolder || item.children?.length);
+    
+    if (isFolder) {
+      return isExpanded ? <FolderOpenIcon /> : <FolderIcon />;
+    }
+    
+    // Custom logic for files
+    if (item.name.endsWith('.js')) return <JavaScriptIcon />;
+    if (item.name.endsWith('.ts')) return <TypeScriptIcon />;
+    
+    return <DefaultFileIcon />;
+  }
+};
+```
+
+### 4. Explicit Icon Keys
+
+```jsx
+const data = [
+  {
+    id: 'special-folder',
+    name: 'Special Folder',
+    isFolder: true,
+    iconKey: 'special' // Will look up in iconConfig.iconMap['special']
+  }
+];
+```
+
+### 5. Legacy renderItemIcon Function
+
+```jsx
+<FolderList
+  data={data}
+  renderItemIcon={(item, isExpanded) => {
+    // Custom icon logic
+    return <CustomIcon />;
+  }}
+/>
+```
+
+### Icon Resolution Priority
+
+The component resolves icons in the following order:
+
+1. **Direct icon** on item (`item.icon`)
+2. **Legacy renderItemIcon** function
+3. **Icon from iconMap** using `item.iconKey`
+4. **Icon from iconMap** using `getIconKey()` result
+5. **Icon from iconResolver** function
+6. **Default icons** from config
+7. **Built-in default** icons
+
 ## Keyboard Navigation
 
 The component supports the following keyboard shortcuts:
@@ -93,7 +196,8 @@ The component supports the following keyboard shortcuts:
 | `onItemDoubleClick` | `(item: FolderItemData) => void` | - | Callback when an item is double-clicked |
 | `onItemContextMenu` | `(item: FolderItemData, event: React.MouseEvent) => void` | - | Callback for context menu events |
 | `renderItemContent` | `(item: FolderItemData, isExpanded: boolean) => React.ReactNode` | - | Custom renderer for item content |
-| `renderItemIcon` | `(item: FolderItemData, isExpanded: boolean) => React.ReactNode` | - | Custom renderer for item icons |
+| `renderItemIcon` | `(item: FolderItemData, isExpanded: boolean) => React.ReactNode` | - | Custom renderer for item icons (legacy) |
+| `iconConfig` | `IconConfig` | - | Icon configuration object |
 | `itemHeight` | `number` | `28` | Height of each item in pixels |
 | `className` | `string` | - | Additional CSS class for the container |
 | `style` | `React.CSSProperties` | - | Additional inline styles for the container |
@@ -130,8 +234,41 @@ interface FolderItemData {
   children?: FolderItemData[];
   isFolder?: boolean;
   icon?: React.ReactNode;
+  iconKey?: string;
   customData?: any;
 }
+
+interface IconConfig {
+  iconMap?: Record<string, React.ReactNode>;
+  iconResolver?: (item: FolderItemData, isExpanded: boolean) => React.ReactNode | null;
+  defaultFolderIcon?: React.ReactNode;
+  defaultFileIcon?: React.ReactNode;
+  getIconKey?: (item: FolderItemData) => string | null;
+}
+```
+
+## Utilities
+
+The package exports several utility functions to help with icon management:
+
+```js
+import { 
+  createFileExtensionIconResolver,
+  getFileExtension,
+  resolveIcon 
+} from 'hierarchical-folders-list';
+
+// Create an icon key resolver based on file extensions
+const getIconKey = createFileExtensionIconResolver({
+  'html': 'web',
+  'md': 'markdown',
+});
+
+// Get file extension from filename
+const extension = getFileExtension('file.tsx'); // 'tsx'
+
+// Manually resolve icon (used internally)
+const icon = resolveIcon(item, isExpanded, iconConfig);
 ```
 
 ## Example

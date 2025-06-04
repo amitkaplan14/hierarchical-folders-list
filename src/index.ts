@@ -7,6 +7,7 @@ export * from './types';
 
 // Export utilities
 export { flattenTree, getVisibleItems } from './utils/treeUtils';
+export { resolveIcon, getFileExtension, createFileExtensionIconResolver } from './utils/iconUtils';
 
 // Export hooks
 export { useVirtualization } from './hooks/useVirtualization';
