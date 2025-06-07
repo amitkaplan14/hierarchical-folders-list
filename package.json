@@ -1,6 +1,6 @@
 {
-  "name": "hierarchical-folders-list",
-  "version": "1.1.0",
+  "name": "hierarchical-folder-tree",
+  "version": "1.1.1",
   "description": "A virtualized hierarchical folders list component for React with comprehensive icon support",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -11,6 +11,10 @@
   "scripts": {
     "build": "rollup -c",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amitkaplan14/hierarchical-folders-list.git"
   },
   "keywords": [
     "react",
@@ -24,8 +28,12 @@
     "icon-support",
     "typescript"
   ],
-  "author": "",
+  "author": "Amit Kaplan <amitkaplan14@gmail.com> (https://github.com/amitkaplan14)",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/amitkaplan14/hierarchical-folders-list/issues"
+  },
+  "homepage": "https://github.com/amitkaplan14/hierarchical-folders-list#readme",
   "peerDependencies": {
     "react": ">=17.0.0",
     "react-dom": ">=17.0.0",
