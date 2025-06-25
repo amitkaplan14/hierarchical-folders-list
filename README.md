@@ -20,6 +20,23 @@ npm install hierarchical-folders-list
 yarn add hierarchical-folders-list
 ```
 
+## TypeScript Requirements
+
+This package requires TypeScript configuration that includes ES2015+ features. Make sure your `tsconfig.json` includes:
+
+```json
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "lib": ["dom", "dom.iterable", "es2015", "es2016", "es2017"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  }
+}
+```
+
+**Note**: If you see errors about `Set` or `Iterable`, ensure your `lib` array includes `"es2015"` or later.
+
 ## Usage
 
 ```jsx

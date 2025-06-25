@@ -2,11 +2,9 @@
 node_modules/
 jspm_packages/
 
-# Build outputs
-dist/
+# Build outputs (but keep dist for publishing)
 build/
 lib/
-types/
 *.tgz
 
 # Logs
@@ -22,4 +20,10 @@ lerna-debug.log*
 .vscode
 *.swp
 *.swo
-.DS_Store 
+.DS_Store
+
+# Test files
+test-package.js
+test-types.ts
+test-consumer-project/
+test-scripts.sh 

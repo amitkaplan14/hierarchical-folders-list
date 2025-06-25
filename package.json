@@ -8,9 +8,16 @@
     "dist"
   ],
   "types": "dist/types/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": ["dist/types/*"]
+    }
+  },
   "scripts": {
     "build": "rollup -c",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:publish": "./test-publish.sh",
+    "prepublishOnly": "npm run build && npm run test:publish"
   },
   "repository": {
     "type": "git",
