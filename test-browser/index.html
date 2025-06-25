@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hierarchical Folder Tree - Browser Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .folder-tree {
+      height: 400px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .console {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    .controls {
+      margin-bottom: 15px;
+    }
+    button {
+      background: #0078d7;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #106ebe;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🧪 Hierarchical Folder Tree - Browser Test</h1>
+      <p>Testing the package as a real consumer would use it</p>
+    </div>
+    
+    <div class="controls">
+      <button onclick="expandAll()">Expand All</button>
+      <button onclick="collapseAll()">Collapse All</button>
+      <button onclick="clearConsole()">Clear Console</button>
+    </div>
+    
+    <div id="folder-tree" class="folder-tree"></div>
+    
+    <div class="console" id="console">Browser test started...\n</div>
+  </div>
+
+  <!-- React and dependencies -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/@emotion/react@11.11.0/dist/emotion-react.umd.min.js"></script>
+  <script src="https://unpkg.com/@emotion/styled@11.11.0/dist/emotion-styled.umd.min.js"></script>
+  <script src="https://unpkg.com/classnames@2.3.2/index.js"></script>
+  
+  <!-- Your package -->
+  <script src="../dist/index.umd.js"></script>
+
+  <script type="text/babel">
+    const { FolderList } = window.HierarchicalFoldersList;
+    
+    // Sample data
+    const sampleData = [
+      {
+        id: '1',
+        name: '📁 Documents',
+        isFolder: true,
+        children: [
+          {
+            id: '1-1',
+            name: '📁 Work',
+            isFolder: true,
+            children: [
+              { id: '1-1-1', name: '📄 report.pdf', isFolder: false },
+              { id: '1-1-2', name: '📄 presentation.pptx', isFolder: false }
+            ]
+          },
+          { id: '1-2', name: '📄 resume.pdf', isFolder: false }
+        ]
+      },
+      {
+        id: '2',
+        name: '📁 Pictures',
+        isFolder: true,
+        children: [
+          { id: '2-1', name: '🖼️ vacation.jpg', isFolder: false },
+          { id: '2-2', name: '🖼️ family.png', isFolder: false }
+        ]
+      }
+    ];
+
+    // Console logging
+    const log = (message) => {
+      const console = document.getElementById('console');
+      const timestamp = new Date().toLocaleTimeString();
+      console.textContent += `[${timestamp}] ${message}\n`;
+      console.scrollTop = console.scrollHeight;
+    };
+
+    // Event handlers
+    const handleItemClick = (item) => {
+      log(`🖱️ Clicked: ${item.name}`);
+    };
+
+    const handleItemDoubleClick = (item) => {
+      log(`🖱️🖱️ Double-clicked: ${item.name}`);
+    };
+
+    // Control functions
+    window.expandAll = () => {
+      log('🔽 Expanded all folders');
+    };
+
+    window.collapseAll = () => {
+      log('🔼 Collapsed all folders');
+    };
+
+    window.clearConsole = () => {
+      document.getElementById('console').textContent = 'Console cleared...\n';
+    };
+
+    // Render
+    ReactDOM.render(
+      <FolderList
+        data={sampleData}
+        onItemClick={handleItemClick}
+        onItemDoubleClick={handleItemDoubleClick}
+        defaultExpandedIds={['1']}
+        itemHeight={32}
+      />,
+      document.getElementById('folder-tree')
+    );
+
+    log('🚀 Browser test initialized');
+    log('📦 Package loaded successfully');
+    log('🎯 Try clicking and double-clicking on items');
+  </script>
+</body>
+</html> 
